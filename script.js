@@ -11,9 +11,9 @@ const MODEL_CONFIGS = {
         cy: [46.4, 316.2, 586.0],
         ty: [81.9, 351.7, 621.5],
         fontSize: 12,
-        bc_width: 2,
-        bc_height: 70,
-        bc_margin: 10
+        bc_width: 20,
+        bc_height: 700,
+        bc_margin: 20
     },
     model2: {
         width: 612.0,
@@ -26,9 +26,9 @@ const MODEL_CONFIGS = {
         get_by: (r) => 41.0 + r * 36.0,
         get_ty: (r) => 67.5 + r * 36.0,
         fontSize: 11,
-        bc_width: 2,
-        bc_height: 21,
-        bc_margin: 15
+        bc_width: 20,
+        bc_height: 210,
+        bc_margin: 30
     }
 };
 
@@ -187,11 +187,11 @@ async function handleGenerate() {
                 return { bx, pdflib_by, pdflib_ty, cx, fitz_by: by, fitz_ty: ty };
             };
 
+            // Passo 1: Desenhar TODOS os retângulos brancos primeiro (para não apagar códigos das colunas vizinhas)
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
-                    const { bx, pdflib_by, pdflib_ty, cx, fitz_by, fitz_ty } = getCellPos(r, c);
+                    const { bx, fitz_by, fitz_ty } = getCellPos(r, c);
                     
-                    // Apagar template original de fundo (White Rectangle)
                     const rect_width = config.base_w + 20.0;
                     const rect_height = (fitz_ty + 10.0) - (fitz_by - 5.0);
                     const rect_x = bx - 10.0;
@@ -204,6 +204,13 @@ async function handleGenerate() {
                         height: rect_height,
                         color: rgb(1, 1, 1)
                     });
+                }
+            }
+
+            // Passo 2: Desenhar os códigos de barras e textos por cima
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const { bx, pdflib_by, pdflib_ty, cx } = getCellPos(r, c);
                     
                     if (customSup || customInf) {
                         const getFontSize = (text) => {
