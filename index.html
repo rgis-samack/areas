@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Etiquetas PRO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Bibliotecas Externas -->
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-bar">
+            <div class="logo-area">
+                <div class="logo-icon">🎫</div>
+                <div class="title-container">
+                    <h1>Gerador de Etiquetas <span>PRO</span></h1>
+                    <span class="creator-badge" style="font-size: 0.75rem; color: var(--primary); font-family: 'Outfit', sans-serif;">Samack D697 Aracaju-SE</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <span class="version">v2.3 Web</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="panel settings-panel">
+                <div class="section-title">1. Selecione o Modelo da Folha:</div>
+                <div class="radio-group">
+                    <label class="radio-card">
+                        <input type="radio" name="model" value="model1" checked>
+                        <div class="card-content">
+                            <span class="card-title">Modelo 1</span>
+                            <span class="card-desc">9 etiquetas por folha (Com dígito)</span>
+                        </div>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="model" value="model2">
+                        <div class="card-content">
+                            <span class="card-title">Modelo 2</span>
+                            <span class="card-desc">80 etiquetas por folha (Sem dígito)</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="section-title">2. Tipo de Código de Barras:</div>
+                <div class="radio-group-inline">
+                    <label class="radio-inline">
+                        <input type="radio" name="bctype" value="code128" checked>
+                        <span>Code 128</span>
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="bctype" value="code39">
+                        <span>Code 39</span>
+                    </label>
+                </div>
+
+                <div class="section-title">3. Configuração das Etiquetas:</div>
+                <div class="tabs-container">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-tab="tab-bc">Código de Barras</button>
+                        <button class="tab-btn" data-tab="tab-text">Texto Personalizado</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="tab-bc">
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="prefix">Prefixo:</label>
+                                <input type="text" id="prefix" placeholder="Ex: BR">
+                            </div>
+                            <div class="input-group">
+                                <label for="startNum">Número Inicial:</label>
+                                <input type="number" id="startNum" placeholder="Ex: 0200">
+                            </div>
+                            <div class="input-group">
+                                <label for="suffix">Sufixo:</label>
+                                <input type="text" id="suffix" placeholder="Ex: A">
+                            </div>
+                            <div class="input-group">
+                                <label for="endNum">Número Final:</label>
+                                <input type="number" id="endNum" placeholder="Ex: 0500">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="tab-text">
+                        <div class="input-grid single-col">
+                            <div class="input-group">
+                                <label for="textSup">Texto Superior: <span class="char-count" id="countSup">0/15</span></label>
+                                <input type="text" id="textSup" placeholder="Texto no lugar do Código (máx 15 carac.)" maxlength="15">
+                            </div>
+                            <div class="input-group">
+                                <label for="textInf">Texto Inferior: <span class="char-count" id="countInf">0/15</span></label>
+                                <input type="text" id="textInf" placeholder="Texto no lugar do Número (máx 15 carac.)" maxlength="15">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">4. Modo de Impressão:</div>
+                <div class="radio-group">
+                    <label class="radio-card">
+                        <input type="radio" name="printMode" value="seq" checked>
+                        <div class="card-content">
+                            <span class="card-title">Sequência Contínua</span>
+                            <span class="card-desc">Números diferentes na mesma folha</span>
+                        </div>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="printMode" value="same">
+                        <div class="card-content">
+                            <span class="card-title">Folhas Completas</span>
+                            <span class="card-desc">1 folha inteira para cada número</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel actions-panel">
+                <div class="status-container" id="statusBox">
+                    <p>Pronto para gerar. Preencha os dados e clique no botão abaixo.</p>
+                </div>
+                
+                <!-- Canvas invisível para JsBarcode -->
+                <canvas id="barcodeCanvas" style="display:none;"></canvas>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="btnGenerate">
+                        <span class="btn-icon">📄</span> Gerar e Abrir PDF
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="templates.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
