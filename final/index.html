@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário Finalizado</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand-color: #78B928;
+            --dynamic-hue: 0deg;
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #030303;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            perspective: 1500px; /* Perspectiva profunda para o efeito 3D */
+        }
+
+        /* Efeito de luz mágica no fundo que acompanha o mouse */
+        .bg-glow {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(
+                circle 800px at var(--mouse-x) var(--mouse-y), 
+                rgba(120, 185, 40, 0.15), 
+                transparent 60%
+            );
+            z-index: 0;
+            pointer-events: none;
+            filter: hue-rotate(var(--dynamic-hue));
+        }
+
+        #canvas-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            filter: hue-rotate(var(--dynamic-hue));
+        }
+
+        #score-container {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 1px solid rgba(120, 185, 40, 0.3);
+            box-shadow: 0 0 30px rgba(120, 185, 40, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.1s ease, border-color 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        #score-container span {
+            color: var(--brand-color);
+            filter: hue-rotate(var(--dynamic-hue));
+            font-size: 32px;
+            text-shadow: 0 0 15px rgba(120, 185, 40, 0.8);
+        }
+
+        /* O container agora é transparente, sem bordas ou fundo */
+        .content-wrapper {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            /* Efeito de levitação */
+            animation: float 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .lm-logo {
+            position: relative;
+            width: 260px;
+            height: 180px;
+            margin: 0 auto 50px auto;
+            transform-style: preserve-3d;
+        }
+
+        .triangle {
+            width: 0; 
+            height: 0; 
+            border-left: 120px solid transparent;
+            border-right: 120px solid transparent;
+            border-bottom: 150px solid var(--brand-color);
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            filter: hue-rotate(var(--dynamic-hue)) drop-shadow(0 0 40px rgba(120, 185, 40, 0.6));
+            transition: filter 0.1s ease;
+            transform: translateZ(30px); /* Pula pra fora da tela em 3D */
+        }
+
+        .text-leroy, .text-merlin {
+            position: absolute;
+            color: white;
+            font-weight: 900;
+            font-size: 34px;
+            letter-spacing: 2px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transform: translateZ(50px); /* Fica mais saltado que o triângulo */
+        }
+
+        .text-leroy { transform: rotate(-52deg) translateZ(50px); left: -40px; top: 60px; }
+        .text-merlin { transform: rotate(52deg) translateZ(50px); right: -45px; top: 60px; }
+
+        h1 {
+            font-size: 5.5rem;
+            color: white;
+            margin: 0;
+            letter-spacing: -2px;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transform: translateZ(40px);
+        }
+
+        h1 span {
+            color: var(--brand-color);
+            filter: hue-rotate(var(--dynamic-hue));
+            transition: filter 0.1s ease;
+            text-shadow: 0 0 50px rgba(120, 185, 40, 0.6);
+        }
+
+        .checkmark-wrapper {
+            margin-top: 50px;
+            display: flex;
+            justify-content: center;
+            transform: translateZ(60px);
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border: 4px solid var(--brand-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: hue-rotate(var(--dynamic-hue));
+            box-shadow: 0 0 30px rgba(120, 185, 40, 0.4), inset 0 0 20px rgba(120, 185, 40, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(120, 185, 40, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(120, 185, 40, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(120, 185, 40, 0); }
+        }
+
+        .checkmark svg { width: 40px; height: 40px; fill: none; stroke: var(--brand-color); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Estilos do Mini-Game Otimizados para Alto Impacto */
+        .falling-item {
+            position: absolute;
+            top: -100px;
+            cursor: crosshair;
+            z-index: 10;
+            transition: transform 0.1s;
+            animation: fall linear forwards;
+            filter: drop-shadow(0 0 20px rgba(120, 185, 40, 0.9));
+        }
+        
+        .falling-item:active { transform: scale(0.6); }
+
+        .falling-triangle {
+            width: 0; height: 0; 
+            border-left: 35px solid transparent;
+            border-right: 35px solid transparent;
+            border-bottom: 50px solid var(--brand-color);
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(calc(100vh + 100px)) rotate(720deg); opacity: 0; }
+        }
+
+        /* Explosão épica */
+        .particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #ffd700;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 15;
+            animation: explodeEpic 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            box-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00;
+        }
+
+        @keyframes explodeEpic {
+            0% { opacity: 1; transform: scale(2) translate(0, 0); filter: brightness(2); }
+            100% { opacity: 0; transform: scale(0) translate(var(--tx), var(--ty)); filter: brightness(1); }
+        }
+
+        .floating-money {
+            position: absolute;
+            color: #ffd700;
+            font-size: 45px;
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 16;
+            animation: floatMoneyEpic 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-shadow: 0 0 20px rgba(255,215,0,1), 0 0 40px rgba(255,140,0,0.8);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        @keyframes floatMoneyEpic {
+            0% { opacity: 0; transform: translateY(20px) scale(0.5); }
+            20% { opacity: 1; transform: translateY(0) scale(1.5); }
+            100% { opacity: 0; transform: translateY(-150px) scale(2); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .lm-logo { transform: scale(0.6); margin-bottom: 0px; }
+            .checkmark { width: 60px; height: 60px; }
+            .checkmark svg { width: 30px; height: 30px; }
+            #score-container { top: 20px; right: 20px; font-size: 14px; padding: 10px 20px; }
+            #score-container span { font-size: 24px; }
+            .text-leroy { transform: rotate(-52deg) translateZ(0); }
+            .text-merlin { transform: rotate(52deg) translateZ(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fundo Interativo de Constelação em Canvas -->
+    <canvas id="canvas-bg"></canvas>
+
+    <div class="bg-glow"></div>
+
+    <div id="score-container">Pontos 💰 <br><span id="score">0</span></div>
+
+    <!-- Container sem bordas, apenas levitando os elementos em 3D -->
+    <div class="content-wrapper" id="scene">
+        
+        <div class="lm-logo" id="logo">
+            <div class="triangle"></div>
+            <div class="text-leroy">LEROY</div>
+            <div class="text-merlin">MERLIN</div>
+        </div>
+
+        <h1>Inventario <span>Finalizado</span></h1>
+
+        <div class="checkmark-wrapper">
+            <div class="checkmark">
+                <svg viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const scene = document.getElementById("scene");
+        const scoreEl = document.getElementById("score");
+        const scoreContainer = document.getElementById("score-container");
+        let score = 0;
+
+        // Efeito de Mouse: Cores, Luzes e Parallax 3D
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener("mousemove", (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            // 1. Efeito de Luz no fundo
+            document.documentElement.style.setProperty("--mouse-x", `${mouseX}px`);
+            document.documentElement.style.setProperty("--mouse-y", `${mouseY}px`);
+            
+            // 2. Mudança Mágica de Cor
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const distX = (mouseX - centerX) / centerX;
+            const distY = (mouseY - centerY) / centerY;
+            
+            const hue = (distX * 50) + (distY * 40); 
+            document.documentElement.style.setProperty("--dynamic-hue", `${hue}deg`);
+
+            // 3. Efeito Parallax 3D Holgráfico (Incrível)
+            // O texto e o logo se movem na direção oposta ao mouse em 3 dimensões
+            const rotateX = (distY * -15).toFixed(2); // Até 15 graus de rotação
+            const rotateY = (distX * 15).toFixed(2);
+            scene.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        // ----- SISTEMA DO CANVAS (CONSTELAÇÃO DE LUZES) -----
+        const canvas = document.getElementById("canvas-bg");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        // Cria as partículas de luz ao fundo
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: (Math.random() - 0.5) * 1.5,
+                radius: Math.random() * 2 + 1
+            });
+        }
+
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "rgba(120, 185, 40, 0.6)";
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // Bate nas bordas e volta
+                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Conecta partículas próximas
+                for (let j = i + 1; j < particles.length; j++) {
+                    let p2 = particles[j];
+                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        // A linha fica mais transparente quanto mais longe
+                        ctx.strokeStyle = `rgba(120, 185, 40, ${0.2 - dist/600})`;
+                        ctx.stroke();
+                    }
+                }
+                
+                // Conecta com o mouse
+                let distMouse = Math.hypot(p.x - mouseX, p.y - mouseY);
+                if (distMouse < 200) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(mouseX, mouseY);
+                    ctx.strokeStyle = `rgba(120, 185, 40, ${0.4 - distMouse/500})`;
+                    ctx.stroke();
+                }
+            }
+            requestAnimationFrame(drawCanvas);
+        }
+        drawCanvas();
+
+        // ----- SISTEMA DO MINI-GAME (Épico) -----
+        function spawnLeroy() {
+            const item = document.createElement("div");
+            item.className = "falling-item";
+            
+            item.innerHTML = `<div class="falling-triangle" style="filter: hue-rotate(var(--dynamic-hue));"></div>`;
+            
+            item.style.left = Math.random() * 90 + 5 + "%";
+            
+            const duration = Math.random() * 3 + 2; // Caem mais rápido agora!
+            item.style.animationDuration = duration + "s";
+            item.style.animationDelay = Math.random() * 0.2 + "s";
+            
+            document.body.appendChild(item);
+            
+            const popItem = (e) => {
+                e.preventDefault();
+                
+                score += 15; // Pontos valem mais agora!
+                scoreEl.innerText = score;
+                
+                scoreContainer.style.transform = "scale(1.3) rotate(3deg)";
+                scoreContainer.style.borderColor = "#ffd700";
+                setTimeout(() => {
+                    scoreContainer.style.transform = "scale(1) rotate(0deg)";
+                    scoreContainer.style.borderColor = "rgba(120, 185, 40, 0.3)";
+                }, 200);
+                
+                const rect = item.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                
+                createExplosion(x, y);
+                createMoneyText(x, y);
+                
+                item.remove();
+            };
+
+            item.addEventListener("mousedown", popItem);
+            item.addEventListener("touchstart", popItem, {passive: false});
+            
+            item.addEventListener("animationend", () => {
+                if(item.parentNode) item.remove();
+            });
+        }
+
+        function createExplosion(x, y) {
+            const particleCount = 20; // Muito mais partículas (explosão épica)
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement("div");
+                p.className = "particle";
+                p.style.left = x + "px";
+                p.style.top = y + "px";
+                
+                const angle = (Math.PI * 2 / particleCount) * i;
+                const dist = 80 + Math.random() * 80; 
+                p.style.setProperty("--tx", Math.cos(angle) * dist + "px");
+                p.style.setProperty("--ty", Math.sin(angle) * dist + "px");
+                
+                document.body.appendChild(p);
+                setTimeout(() => { if(p.parentNode) p.remove(); }, 800);
+            }
+        }
+
+        function createMoneyText(x, y) {
+            const m = document.createElement("div");
+            m.className = "floating-money";
+            m.innerText = "+💰R$"; 
+            m.style.left = (x - 40) + "px";
+            m.style.top = (y - 30) + "px";
+            document.body.appendChild(m);
+            setTimeout(() => { if(m.parentNode) m.remove(); }, 1000);
+        }
+
+        // Chove mais símbolos agora (1 a cada 600ms)
+        setInterval(spawnLeroy, 600);
+
+    </script>
+</body>
+</html>
