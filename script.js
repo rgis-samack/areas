@@ -6,11 +6,14 @@ const MODEL_CONFIGS = {
         rows: 3,
         cols: 3,
         base_w: 55.0,
-        base_h: 31.0,
+        base_h: 53.94, // 31.0 * 1.74 (default scale from python)
         cx: [150.4, 348.8, 544.1],
         cy: [46.4, 316.2, 586.0],
         ty: [81.9, 351.7, 621.5],
-        fontSize: 12
+        fontSize: 12,
+        bc_width: 2,
+        bc_height: 70,
+        bc_margin: 10
     },
     model2: {
         width: 612.0,
@@ -22,7 +25,10 @@ const MODEL_CONFIGS = {
         col_centers: [82.512, 217.016, 351.52, 486.024],
         get_by: (r) => 41.0 + r * 36.0,
         get_ty: (r) => 67.5 + r * 36.0,
-        fontSize: 11
+        fontSize: 11,
+        bc_width: 2,
+        bc_height: 21,
+        bc_margin: 15
     }
 };
 
@@ -68,13 +74,15 @@ function calcCheckDigit(numStr) {
     return 11 - rem;
 }
 
-function generateBarcodeBase64(text, type) {
+function generateBarcodeBase64(text, type, bc_width, bc_height, margin_px) {
     const canvas = document.getElementById('barcodeCanvas');
     try {
         JsBarcode(canvas, text, {
             format: type === 'code128' ? 'CODE128' : 'CODE39',
             displayValue: false,
-            margin: 0,
+            margin: margin_px,
+            width: bc_width,
+            height: bc_height,
             background: "#ffffff",
             lineColor: "#000000"
         });
@@ -220,14 +228,28 @@ async function handleGenerate() {
                     }
                     
                     // Geração Código de Barras
-                    const b64Image = generateBarcodeBase64(baseStr, bcType);
+                    const b64Image = generateBarcodeBase64(baseStr, bcType, config.bc_width, config.bc_height, config.bc_margin);
                     if (b64Image) {
                         const pngImage = await newPdf.embedPng(b64Image);
+                        
+                        // Manter a proporção (keep_proportion=True igual PyMuPDF)
+                        const imgW = pngImage.width;
+                        const imgH = pngImage.height;
+                        const scaleX = config.base_w / imgW;
+                        const scaleY = config.base_h / imgH;
+                        const scale = Math.min(scaleX, scaleY);
+                        
+                        const finalW = imgW * scale;
+                        const finalH = imgH * scale;
+                        
+                        const drawX = bx + (config.base_w - finalW) / 2.0;
+                        const drawY = pdflib_by + (config.base_h - finalH) / 2.0;
+
                         page.drawImage(pngImage, {
-                            x: bx,
-                            y: pdflib_by,
-                            width: config.base_w,
-                            height: config.base_h
+                            x: drawX,
+                            y: drawY,
+                            width: finalW,
+                            height: finalH
                         });
                     }
                     
