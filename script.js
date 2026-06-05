@@ -184,12 +184,26 @@ async function handleGenerate() {
                 const pdflib_by = height - by - config.base_h;
                 const pdflib_ty = height - ty;
                 
-                return { bx, pdflib_by, pdflib_ty, cx };
+                return { bx, pdflib_by, pdflib_ty, cx, fitz_by: by, fitz_ty: ty };
             };
 
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
-                    const { bx, pdflib_by, pdflib_ty, cx } = getCellPos(r, c);
+                    const { bx, pdflib_by, pdflib_ty, cx, fitz_by, fitz_ty } = getCellPos(r, c);
+                    
+                    // Apagar template original de fundo (White Rectangle)
+                    const rect_width = config.base_w + 20.0;
+                    const rect_height = (fitz_ty + 10.0) - (fitz_by - 5.0);
+                    const rect_x = bx - 10.0;
+                    const rect_y = height - (fitz_ty + 10.0);
+                    
+                    page.drawRectangle({
+                        x: rect_x,
+                        y: rect_y,
+                        width: rect_width,
+                        height: rect_height,
+                        color: rgb(1, 1, 1)
+                    });
                     
                     if (customSup || customInf) {
                         const getFontSize = (text) => {
