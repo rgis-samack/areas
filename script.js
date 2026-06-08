@@ -318,8 +318,25 @@ async function handleGenerate() {
         const pdfBytesArray = await newPdf.save();
         const blob = new Blob([pdfBytesArray], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        setStatus(`Sucesso! O PDF foi gerado e aberto em uma nova guia.`, 'success');
+        
+        let fileName = 'Etiquetas.pdf';
+        if (customSup || customInf) {
+            const textLabel = customSup ? customSup : customInf;
+            fileName = `Etiquetas_Texto_${textLabel}_${model}.pdf`;
+        } else {
+            const finalEndStr = endStr ? endStr : startStr;
+            fileName = `Etiquetas_${prefix}${startStr}${suffix}_a_${prefix}${finalEndStr}${suffix}_${model}.pdf`;
+        }
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        setStatus(`Sucesso! O PDF foi baixado automaticamente.`, 'success');
         
     } catch (e) {
         console.error(e);
