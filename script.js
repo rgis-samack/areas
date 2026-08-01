@@ -119,8 +119,8 @@ function generateBarcodeBase64(text, type, bc_width, bc_height, margin_px) {
             ctx.msImageSmoothingEnabled = false;
         }
 
-        // Proteção 3: Margens de Silêncio Garantidas (Quiet Zone >= 10X para leitura instantânea por leitor/câmera)
-        const quietZone = Math.max(margin_px || 10, bc_width * 10);
+        // Margem limpa usando a configuração do modelo (bc_margin = 30)
+        const quietZone = margin_px !== undefined ? margin_px : 10;
 
         let isValidBarcode = true;
 
@@ -175,12 +175,6 @@ async function handleGenerate() {
     timerBadge.style.display = 'inline-flex';
     setStatus('Iniciando processamento...', '');
 
-    // Pre-abrir a aba síncronamente no clique do usuário para ignorar o bloqueador de pop-ups dos navegadores
-    let previewTab = null;
-    try {
-        previewTab = window.open('about:blank', '_blank');
-    } catch (err) {}
-
     const startTime = Date.now();
     const timerInterval = setInterval(() => {
         const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -190,7 +184,6 @@ async function handleGenerate() {
     const cancelAndError = (errMsg) => {
         clearInterval(timerInterval);
         progressBarFill.style.width = '0%';
-        if (previewTab && !previewTab.closed) previewTab.close();
         setStatus(errMsg, 'error');
     };
 
@@ -560,21 +553,14 @@ async function handleGenerate() {
         a.click();
         document.body.removeChild(a);
         
-        // Redirecionar a aba pré-aberta para a URL do PDF (bypassa o bloqueador de pop-ups)
-        if (previewTab && !previewTab.closed) {
-            previewTab.location.href = url;
-        } else {
-            window.open(url, '_blank');
-        }
+        // Abrir em Nova Guia APENAS quando o PDF estiver 100% pronto (Sem aba 'about:blank' vazia inicial!)
+        window.open(url, '_blank');
         
         setStatus(`🎉 Sucesso! PDF com ${totalPages} folha(s) baixado e aberto em nova aba.`, 'success');
         
     } catch (e) {
         if (typeof timerInterval !== 'undefined') clearInterval(timerInterval);
         progressBarFill.style.width = '0%';
-        if (typeof previewTab !== 'undefined' && previewTab && !previewTab.closed) {
-            previewTab.close();
-        }
         console.error(e);
         setStatus(`Erro Crítico: ${e.message}`, 'error');
     }
