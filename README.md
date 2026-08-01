@@ -1,4 +1,8 @@
 🏷️ Gerador de Etiquetas & Códigos de Barra
+
+https://rgis-samack.github.io/areas/ 
+
+
 Criado e Desenvolvido por: Samack D697
 
 ⚙️ 1. Como a Ferramenta é Feita (Tecnologia & Arquitetura):
