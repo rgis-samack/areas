@@ -607,3 +607,178 @@ async function handleGenerate() {
         setStatus(`Erro Crítico: ${e.message}`, 'error');
     }
 }
+
+// Engine de Tradução Multilíngue (PT, EN, ES, JA)
+const TRANSLATIONS = {
+    pt: {
+        title: "Gerador de Etiquetas",
+        subtitle: "Samack D697 Aracaju-SE",
+        letterNotice: "⚠️ IMPRIMIR EM MODO CARTA",
+        sec1Title: "1. Selecione o Modelo da Folha:",
+        model2Title: "Modelo Atual",
+        model2Desc: "80 etiquetas por folha (Sem dígito)",
+        model1Title: "Modelo Antigo",
+        model1Desc: "9 etiquetas por folha (Com dígito)",
+        sec2Title: "2. Tipo de Código de Barras:",
+        sec3Title: "3. Configuração das Etiquetas:",
+        tabBc: "Código de Barras",
+        tabText: "Texto Personalizado",
+        prefixLabel: "Prefixo:",
+        startNumLabel: "Número Inicial:",
+        suffixLabel: "Sufixo:",
+        endNumLabel: "Número Final:",
+        textSupLabel: "Texto Superior:",
+        textInfLabel: "Texto Inferior:",
+        placeholderPrefix: "Ex: BR",
+        placeholderStart: "Ex: 0200",
+        placeholderSuffix: "Ex: A",
+        placeholderEnd: "Ex: 0500",
+        placeholderSup: "Texto no lugar do Código (máx 15 carac.)",
+        placeholderInf: "Texto no lugar do Número (máx 15 carac.)",
+        sec4Title: "4. Modo de Impressão:",
+        printSeqTitle: "Sequência Contínua",
+        printSeqDesc: "Números diferentes na mesma folha",
+        printSameTitle: "Folhas Completas",
+        printSameDesc: "1 folha inteira para cada número",
+        statusReady: "Pronto para gerar. Preencha os dados e clique no botão abaixo.",
+        btnGenerateText: "Gerar e Abrir PDF"
+    },
+    en: {
+        title: "Barcode Label Generator",
+        subtitle: "Samack D697 Aracaju-SE",
+        letterNotice: "⚠️ PRINT IN LETTER PAPER SIZE",
+        sec1Title: "1. Select Sheet Model:",
+        model2Title: "Current Model",
+        model2Desc: "80 labels per sheet (No digit)",
+        model1Title: "Legacy Model",
+        model1Desc: "9 labels per sheet (With digit)",
+        sec2Title: "2. Barcode Format:",
+        sec3Title: "3. Label Configuration:",
+        tabBc: "Barcode",
+        tabText: "Custom Text",
+        prefixLabel: "Prefix:",
+        startNumLabel: "Start Number:",
+        suffixLabel: "Suffix:",
+        endNumLabel: "End Number:",
+        textSupLabel: "Top Text:",
+        textInfLabel: "Bottom Text:",
+        placeholderPrefix: "e.g. BR",
+        placeholderStart: "e.g. 0200",
+        placeholderSuffix: "e.g. A",
+        placeholderEnd: "e.g. 0500",
+        placeholderSup: "Text instead of barcode (max 15 chars)",
+        placeholderInf: "Text instead of number (max 15 chars)",
+        sec4Title: "4. Print Mode:",
+        printSeqTitle: "Continuous Sequence",
+        printSeqDesc: "Different numbers on the same sheet",
+        printSameTitle: "Full Sheets",
+        printSameDesc: "1 full sheet for each number",
+        statusReady: "Ready to generate. Fill in the data and click below.",
+        btnGenerateText: "Generate & Open PDF"
+    },
+    es: {
+        title: "Generador de Etiquetas",
+        subtitle: "Samack D697 Aracaju-SE",
+        letterNotice: "⚠️ IMPRIMIR EN MODO CARTA",
+        sec1Title: "1. Seleccione el Modelo de Hoja:",
+        model2Title: "Modelo Actual",
+        model2Desc: "80 etiquetas por hoja (Sin dígito)",
+        model1Title: "Modelo Antiguo",
+        model1Desc: "9 etiquetas por hoja (Con dígito)",
+        sec2Title: "2. Tipo de Código de Barras:",
+        sec3Title: "3. Configuración de Etiquetas:",
+        tabBc: "Código de Barras",
+        tabText: "Texto Personalizado",
+        prefixLabel: "Prefijo:",
+        startNumLabel: "Número Inicial:",
+        suffixLabel: "Sufijo:",
+        endNumLabel: "Número Final:",
+        textSupLabel: "Texto Superior:",
+        textInfLabel: "Texto Inferior:",
+        placeholderPrefix: "Ej: BR",
+        placeholderStart: "Ej: 0200",
+        placeholderSuffix: "Ej: A",
+        placeholderEnd: "Ej: 0500",
+        placeholderSup: "Texto en lugar del código (máx 15 carac.)",
+        placeholderInf: "Texto en lugar del número (máx 15 carac.)",
+        sec4Title: "4. Modo de Impresión:",
+        printSeqTitle: "Secuencia Continua",
+        printSeqDesc: "Diferentes números en la misma hoja",
+        printSameTitle: "Hojas Completas",
+        printSameDesc: "1 hoja entera para cada número",
+        statusReady: "Listo para generar. Complete los datos y haga clic abajo.",
+        btnGenerateText: "Generar y Abrir PDF"
+    },
+    ja: {
+        title: "ラベルジェネレーター",
+        subtitle: "Samack D697 Aracaju-SE",
+        letterNotice: "⚠️ 用紙サイズ【レター】で印刷",
+        sec1Title: "1. 用紙モデルを選択:",
+        model2Title: "現行モデル",
+        model2Desc: "1シート80枚（チェックデジットなし）",
+        model1Title: "旧モデル",
+        model1Desc: "1シート9枚（チェックデジットあり）",
+        sec2Title: "2. バーコードの種類:",
+        sec3Title: "3. ラベル設定:",
+        tabBc: "バーコード",
+        tabText: "カスタムテキスト",
+        prefixLabel: "プレフィックス:",
+        startNumLabel: "開始番号:",
+        suffixLabel: "サフィックス:",
+        endNumLabel: "終了番号:",
+        textSupLabel: "上部テキスト:",
+        textInfLabel: "下部テキスト:",
+        placeholderPrefix: "例: BR",
+        placeholderStart: "例: 0200",
+        placeholderSuffix: "例: A",
+        placeholderEnd: "例: 0500",
+        placeholderSup: "コードの代わりのテキスト（最大15文字）",
+        placeholderInf: "番号の代わりのテキスト（最大15文字）",
+        sec4Title: "4. 印刷モード:",
+        printSeqTitle: "連続シーケンス",
+        printSeqDesc: "同じシートに異なる番号を印刷",
+        printSameTitle: "全枚同一シート",
+        printSameDesc: "番号ごとに1枚フル印刷",
+        statusReady: "準備完了。必要事項を入力して下のボタンをクリックしてください。",
+        btnGenerateText: "PDFを生成して開く"
+    }
+};
+
+let currentLang = 'pt';
+
+function setLanguage(lang) {
+    if (!TRANSLATIONS[lang]) return;
+    currentLang = lang;
+    const dict = TRANSLATIONS[lang];
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+            el.innerText = dict[key];
+        }
+    });
+
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        if (dict[key]) {
+            el.placeholder = dict[key];
+        }
+    });
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        if (btn.getAttribute('data-lang') === lang) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const lang = e.currentTarget.getAttribute('data-lang');
+            setLanguage(lang);
+        });
+    });
+});

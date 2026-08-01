@@ -29,23 +29,6 @@ body {
     display: flex;
     justify-content: center;
     padding: 2rem;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-}
-
-input, select {
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
-}
-
-img, canvas {
-    -webkit-user-drag: none;
-    user-drag: none;
 }
 
 .app-container {
@@ -64,6 +47,71 @@ img, canvas {
     background-color: var(--bg-panel);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.letter-notice-badge {
+    background: linear-gradient(135deg, #ffd700, #ffae00);
+    color: #000000;
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    box-shadow: 0 0 14px rgba(255, 215, 0, 0.4);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Outfit', sans-serif;
+    animation: pulseNotice 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseNotice {
+    0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); transform: scale(1); }
+    50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); transform: scale(1.03); }
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lang-selector {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: #141418;
+    padding: 3px 6px;
+    border-radius: 12px;
+    border: 1px solid #2e2e38;
+}
+
+.lang-btn {
+    background: transparent;
+    border: none;
+    color: #888888;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lang-btn:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.lang-btn.active {
+    color: #ffffff;
+    background: #4a90d9;
+    box-shadow: 0 2px 8px rgba(74, 144, 217, 0.4);
 }
 
 .logo-area {

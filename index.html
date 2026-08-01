@@ -19,36 +19,49 @@
             <div class="logo-area">
                 <div class="logo-icon">🎫</div>
                 <div class="title-container">
-                    <h1>Gerador de Etiquetas <span>PRO</span></h1>
-                    <span class="creator-badge" style="font-size: 0.75rem; color: var(--primary); font-family: 'Outfit', sans-serif;">Samack D697 Aracaju-SE</span>
+                    <h1><span data-i18n="title">Gerador de Etiquetas</span> <span>PRO</span></h1>
+                    <span class="creator-badge" style="font-size: 0.75rem; color: var(--primary); font-family: 'Outfit', sans-serif;" data-i18n="subtitle">Samack D697 Aracaju-SE</span>
                 </div>
             </div>
+
+            <!-- Destaque Amarelo: Imprimir em modo Carta -->
+            <div class="letter-notice-badge" id="letterNotice" data-i18n="letterNotice">
+                ⚠️ IMPRIMIR EM MODO CARTA
+            </div>
+
             <div class="header-actions">
+                <!-- Seletor de Idiomas ao lado da versão -->
+                <div class="lang-selector">
+                    <button class="lang-btn active" data-lang="pt" title="Português">🇧🇷 PT</button>
+                    <button class="lang-btn" data-lang="en" title="English">🇺🇸 EN</button>
+                    <button class="lang-btn" data-lang="es" title="Español">🇪🇸 ES</button>
+                    <button class="lang-btn" data-lang="ja" title="日本語">🇯🇵 JA</button>
+                </div>
                 <span class="version">v2.3 Web</span>
             </div>
         </header>
 
         <main class="main-content">
             <div class="panel settings-panel">
-                <div class="section-title">1. Selecione o Modelo da Folha:</div>
+                <div class="section-title" data-i18n="sec1Title">1. Selecione o Modelo da Folha:</div>
                 <div class="radio-group">
                     <label class="radio-card">
                         <input type="radio" name="model" value="model2" checked>
                         <div class="card-content">
-                            <span class="card-title">Modelo Atual</span>
-                            <span class="card-desc">80 etiquetas por folha (Sem dígito)</span>
+                            <span class="card-title" data-i18n="model2Title">Modelo Atual</span>
+                            <span class="card-desc" data-i18n="model2Desc">80 etiquetas por folha (Sem dígito)</span>
                         </div>
                     </label>
                     <label class="radio-card">
                         <input type="radio" name="model" value="model1">
                         <div class="card-content">
-                            <span class="card-title">Modelo Antigo</span>
-                            <span class="card-desc">9 etiquetas por folha (Com dígito)</span>
+                            <span class="card-title" data-i18n="model1Title">Modelo Antigo</span>
+                            <span class="card-desc" data-i18n="model1Desc">9 etiquetas por folha (Com dígito)</span>
                         </div>
                     </label>
                 </div>
 
-                <div class="section-title">2. Tipo de Código de Barras:</div>
+                <div class="section-title" data-i18n="sec2Title">2. Tipo de Código de Barras:</div>
                 <div class="radio-group-inline">
                     <label class="radio-inline">
                         <input type="radio" name="bctype" value="code128" checked>
@@ -60,30 +73,30 @@
                     </label>
                 </div>
 
-                <div class="section-title">3. Configuração das Etiquetas:</div>
+                <div class="section-title" data-i18n="sec3Title">3. Configuração das Etiquetas:</div>
                 <div class="tabs-container">
                     <div class="tabs-header">
-                        <button class="tab-btn active" data-tab="tab-bc">Código de Barras</button>
-                        <button class="tab-btn" data-tab="tab-text">Texto Personalizado</button>
+                        <button class="tab-btn active" data-tab="tab-bc" data-i18n="tabBc">Código de Barras</button>
+                        <button class="tab-btn" data-tab="tab-text" data-i18n="tabText">Texto Personalizado</button>
                     </div>
                     
                     <div class="tab-content active" id="tab-bc">
                         <div class="input-grid">
                             <div class="input-group">
-                                <label for="prefix">Prefixo:</label>
-                                <input type="text" id="prefix" placeholder="Ex: BR">
+                                <label for="prefix" data-i18n="prefixLabel">Prefixo:</label>
+                                <input type="text" id="prefix" placeholder="Ex: BR" data-i18n-ph="placeholderPrefix">
                             </div>
                             <div class="input-group">
-                                <label for="startNum">Número Inicial:</label>
-                                <input type="number" id="startNum" placeholder="Ex: 0200">
+                                <label for="startNum" data-i18n="startNumLabel">Número Inicial:</label>
+                                <input type="number" id="startNum" placeholder="Ex: 0200" data-i18n-ph="placeholderStart">
                             </div>
                             <div class="input-group">
-                                <label for="suffix">Sufixo:</label>
-                                <input type="text" id="suffix" placeholder="Ex: A">
+                                <label for="suffix" data-i18n="suffixLabel">Sufixo:</label>
+                                <input type="text" id="suffix" placeholder="Ex: A" data-i18n-ph="placeholderSuffix">
                             </div>
                             <div class="input-group">
-                                <label for="endNum">Número Final:</label>
-                                <input type="number" id="endNum" placeholder="Ex: 0500">
+                                <label for="endNum" data-i18n="endNumLabel">Número Final:</label>
+                                <input type="number" id="endNum" placeholder="Ex: 0500" data-i18n-ph="placeholderEnd">
                             </div>
                         </div>
                     </div>
@@ -91,31 +104,31 @@
                     <div class="tab-content" id="tab-text">
                         <div class="input-grid single-col">
                             <div class="input-group">
-                                <label for="textSup">Texto Superior: <span class="char-count" id="countSup">0/15</span></label>
-                                <input type="text" id="textSup" placeholder="Texto no lugar do Código (máx 15 carac.)" maxlength="15">
+                                <label for="textSup"><span data-i18n="textSupLabel">Texto Superior:</span> <span class="char-count" id="countSup">0/15</span></label>
+                                <input type="text" id="textSup" placeholder="Texto no lugar do Código (máx 15 carac.)" maxlength="15" data-i18n-ph="placeholderSup">
                             </div>
                             <div class="input-group">
-                                <label for="textInf">Texto Inferior: <span class="char-count" id="countInf">0/15</span></label>
-                                <input type="text" id="textInf" placeholder="Texto no lugar do Número (máx 15 carac.)" maxlength="15">
+                                <label for="textInf"><span data-i18n="textInfLabel">Texto Inferior:</span> <span class="char-count" id="countInf">0/15</span></label>
+                                <input type="text" id="textInf" placeholder="Texto no lugar do Número (máx 15 carac.)" maxlength="15" data-i18n-ph="placeholderInf">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="section-title">4. Modo de Impressão:</div>
+                <div class="section-title" data-i18n="sec4Title">4. Modo de Impressão:</div>
                 <div class="radio-group">
                     <label class="radio-card">
                         <input type="radio" name="printMode" value="seq" checked>
                         <div class="card-content">
-                            <span class="card-title">Sequência Contínua</span>
-                            <span class="card-desc">Números diferentes na mesma folha</span>
+                            <span class="card-title" data-i18n="printSeqTitle">Sequência Contínua</span>
+                            <span class="card-desc" data-i18n="printSeqDesc">Números diferentes na mesma folha</span>
                         </div>
                     </label>
                     <label class="radio-card">
                         <input type="radio" name="printMode" value="same">
                         <div class="card-content">
-                            <span class="card-title">Folhas Completas</span>
-                            <span class="card-desc">1 folha inteira para cada número</span>
+                            <span class="card-title" data-i18n="printSameTitle">Folhas Completas</span>
+                            <span class="card-desc" data-i18n="printSameDesc">1 folha inteira para cada número</span>
                         </div>
                     </label>
                 </div>
@@ -125,7 +138,7 @@
                 <div class="status-container" id="statusBox">
                     <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
                     <div class="status-content-wrapper">
-                        <span class="status-message" id="statusMessage">Pronto para gerar. Preencha os dados e clique no botão abaixo.</span>
+                        <span class="status-message" id="statusMessage" data-i18n="statusReady">Pronto para gerar. Preencha os dados e clique no botão abaixo.</span>
                         <span class="timer-badge" id="timerBadge" style="display: none;">⏱️ 0.0s</span>
                     </div>
                 </div>
@@ -135,7 +148,7 @@
 
                 <div class="action-buttons">
                     <button class="btn btn-primary" id="btnGenerate">
-                        <span class="btn-icon">📄</span> Gerar e Abrir PDF
+                        <span class="btn-icon">📄</span> <span data-i18n="btnGenerateText">Gerar e Abrir PDF</span>
                     </button>
                 </div>
             </div>
