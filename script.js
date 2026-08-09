@@ -71,7 +71,46 @@ const MODEL_CONFIGS = {
 let currentTab = 'tab-bc';
 
 // Inicialização
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // ============================================================
+    // KILL-SWITCH: Checagem OBRIGATÓRIA antes de qualquer UI
+    // ============================================================
+    try {
+        const LOCK_URL = 'https://euvhtrwbyxjezbwwwbxb.supabase.co/rest/v1/controle_acesso?app_name=eq.gerador_etiquetas&select=sistema_ativo,mensagem_bloqueio&limit=1';
+        const LOCK_KEY = 'sb_publishable_C_hnCysx4ulNklCJv0UO9g_YFGMgyBv';
+        const lockResp = await fetch(LOCK_URL, {
+            headers: { 'apikey': LOCK_KEY, 'Authorization': 'Bearer ' + LOCK_KEY }
+        });
+        if (lockResp.ok) {
+            const lockData = await lockResp.json();
+            if (lockData && lockData.length > 0 && lockData[0].sistema_ativo === false) {
+                const msgBlock = lockData[0].mensagem_bloqueio || 'Acesso desativado pela administração (Samack 697).';
+                document.body.innerHTML = `
+                    <div style="background:#0a0f1d; color:#ffffff; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-family:'Outfit',sans-serif; padding:2rem;">
+                        <div style="font-size:4rem; margin-bottom:1rem;">🔒</div>
+                        <h1 style="color:#ff0033; font-size:2rem; margin-bottom:1rem;">Acesso Bloqueado pelo Administrador</h1>
+                        <p style="font-size:1.1rem; max-width:600px; color:#8a99ad; line-height:1.6;">${msgBlock}</p>
+                        <span style="margin-top:2rem; font-size:0.85rem; color:#00e5ff;">Samack 697 — Security & Telemetry Control System</span>
+                    </div>
+                `;
+                // Registra log de bloqueio (telemetria)
+                if (typeof checkSupabaseRemoteAccess === 'function') {
+                    const isGitHub = window.location.href.includes('github.io');
+                    const originTag = isGitHub ? 'GitHub Pages' : 'Localhost / Web';
+                    checkSupabaseRemoteAccess('Acesso BLOQUEADO na página - ' + originTag, 'gerador_etiquetas');
+                }
+                return; // PARA TUDO — Não inicializa nenhuma UI
+            }
+        }
+    } catch (lockErr) {
+        console.warn('Kill-switch check falhou:', lockErr);
+        // Se não conseguir verificar, permite o acesso (modo offline)
+    }
+
+    // ============================================================
+    // UI INITIALIZATION (Só executa se o sistema estiver LIBERADO)
+    // ============================================================
+
     // Tabs Logic
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -115,6 +154,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Generate Button
     document.getElementById('btnGenerate').addEventListener('click', handleGenerate);
+
+    // Language buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const lang = e.currentTarget.getAttribute('data-lang');
+            setLanguage(lang);
+        });
+    });
+
+    // Telemetria: registra acesso liberado
+    if (typeof checkSupabaseRemoteAccess === 'function') {
+        const isGitHub = window.location.href.includes('github.io');
+        const originTag = isGitHub ? 'GitHub Pages (rgis-samack.github.io/areas/)' : 'Localhost / Web';
+        checkSupabaseRemoteAccess('Acesso inicial à página - ' + originTag, 'gerador_etiquetas');
+    }
 });
 
 function calcCheckDigit(numStr) {
@@ -786,28 +840,4 @@ function setLanguage(lang) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const lang = e.currentTarget.getAttribute('data-lang');
-            setLanguage(lang);
-        });
-    });
-
-    // Telemetria Automática & Checagem de Trava no Supabase ao carregar a página
-    if (typeof checkSupabaseRemoteAccess === 'function') {
-        const isGitHub = window.location.href.includes('github.io');
-        const originTag = isGitHub ? 'GitHub Pages (rgis-samack.github.io/areas/)' : 'Localhost / Web';
-        const initCheck = await checkSupabaseRemoteAccess(`Acesso inicial à página - ${originTag}`, 'gerador_etiquetas');
-        if (!initCheck.allowed) {
-            document.body.innerHTML = `
-                <div style="background:#0a0f1d; color:#ffffff; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; font-family:'Outfit',sans-serif; padding:2rem;">
-                    <div style="font-size:4rem; margin-bottom:1rem;">🔒</div>
-                    <h1 style="color:#ff0033; font-size:2rem; margin-bottom:1rem;">Acesso Bloqueado pelo Administrador</h1>
-                    <p style="font-size:1.1rem; max-width:600px; color:#8a99ad; line-height:1.6;">${initCheck.message}</p>
-                    <span style="margin-top:2rem; font-size:0.85rem; color:#00e5ff;">Samack 697 — Security & Telemetry Control System</span>
-                </div>
-            `;
-        }
-    }
-});
+// Kill-switch e telemetria agora estão integrados no handler principal acima.
