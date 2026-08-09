@@ -3,7 +3,7 @@
 https://rgis-samack.github.io/areas/ 
 
 
-Criado e Desenvolvido por: Samack D697
+Criado e Desenvolvido por: Felipe Samack D697 Aracaju Sergipe
 
 ⚙️ 1. Como a Ferramenta é Feita (Tecnologia & Arquitetura):
 Tecnologias Web Puras (Sem Servidor): Construída usando HTML5, JavaScript (ES6+) e CSS3 (Design Cyberpunk Dark). Funciona 100% direto no navegador, sem precisar instalar nada e sem custo de servidor.
