@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Etiquetas PRO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Bibliotecas Externas -->
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-bar">
+            <div class="logo-area">
+                <div class="logo-icon">🎫</div>
+                <div class="title-container">
+                    <h1><span data-i18n="title">Gerador de Etiquetas</span> <span>PRO</span></h1>
+                    <span class="creator-badge" style="font-size: 0.75rem; color: var(--primary); font-family: 'Outfit', sans-serif;" data-i18n="subtitle">Samack D697 Aracaju-SE</span>
+                </div>
+            </div>
+
+            <!-- Destaque Amarelo: Imprimir em modo Carta -->
+            <div class="letter-notice-badge" id="letterNotice" data-i18n="letterNotice">
+                ⚠️ IMPRIMIR EM MODO CARTA
+            </div>
+
+            <div class="header-actions">
+                <!-- Seletor de Idiomas com Bandeiras SVG Coloridas -->
+                <div class="lang-selector">
+                    <button class="lang-btn active" data-lang="pt" title="Português">
+                        <svg class="flag-icon" viewBox="0 0 640 480" width="18" height="13.5"><path fill="#009b3a" d="M0 0h640v480H0z"/><path fill="#fedf00" d="M320 40L600 240L320 440L40 240z"/><circle fill="#002776" cx="320" cy="240" r="100"/></svg> PT
+                    </button>
+                    <button class="lang-btn" data-lang="en" title="English">
+                        <svg class="flag-icon" viewBox="0 0 640 480" width="18" height="13.5"><path fill="#bd3d44" d="M0 0h640v480H0z"/><path stroke="#fff" stroke-width="37" d="M0 55.5h640M0 130h640M0 203.5h640M0 277h640M0 350.5h640M0 424h640"/><path fill="#192f5d" d="M0 0h260v259H0z"/></svg> EN
+                    </button>
+                    <button class="lang-btn" data-lang="es" title="Español">
+                        <svg class="flag-icon" viewBox="0 0 640 480" width="18" height="13.5"><path fill="#c60b1e" d="M0 0h640v480H0z"/><path fill="#ffc400" d="M0 120h640v240H0z"/></svg> ES
+                    </button>
+                    <button class="lang-btn" data-lang="ja" title="日本語">
+                        <svg class="flag-icon" viewBox="0 0 640 480" width="18" height="13.5"><path fill="#ffffff" d="M0 0h640v480H0z"/><circle fill="#bc002d" cx="320" cy="240" r="140"/></svg> JA
+                    </button>
+                </div>
+                <span class="version">v2.3 Web</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="panel settings-panel">
+                <div class="section-title" data-i18n="sec1Title">1. Selecione o Modelo da Folha:</div>
+                <div class="radio-group">
+                    <label class="radio-card">
+                        <input type="radio" name="model" value="model2" checked>
+                        <div class="card-content">
+                            <span class="card-title" data-i18n="model2Title">Modelo Atual</span>
+                            <span class="card-desc" data-i18n="model2Desc">80 etiquetas por folha (Sem dígito)</span>
+                        </div>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="model" value="model1">
+                        <div class="card-content">
+                            <span class="card-title" data-i18n="model1Title">Modelo Antigo</span>
+                            <span class="card-desc" data-i18n="model1Desc">9 etiquetas por folha (Com dígito)</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="section-title" data-i18n="sec2Title">2. Tipo de Código de Barras:</div>
+                <div class="radio-group-inline">
+                    <label class="radio-inline">
+                        <input type="radio" name="bctype" value="code128" checked>
+                        <span>Code 128</span>
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="bctype" value="code39">
+                        <span>Code 39</span>
+                    </label>
+                </div>
+
+                <div class="section-title" data-i18n="sec3Title">3. Configuração das Etiquetas:</div>
+                <div class="tabs-container">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-tab="tab-bc" data-i18n="tabBc">Código de Barras</button>
+                        <button class="tab-btn" data-tab="tab-text" data-i18n="tabText">Texto Personalizado</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="tab-bc">
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="prefix" data-i18n="prefixLabel">Prefixo:</label>
+                                <input type="text" id="prefix" placeholder="Ex: BR" data-i18n-ph="placeholderPrefix">
+                            </div>
+                            <div class="input-group">
+                                <label for="startNum" data-i18n="startNumLabel">Número Inicial:</label>
+                                <input type="number" id="startNum" placeholder="Ex: 0200" data-i18n-ph="placeholderStart">
+                            </div>
+                            <div class="input-group">
+                                <label for="suffix" data-i18n="suffixLabel">Sufixo:</label>
+                                <input type="text" id="suffix" placeholder="Ex: A" data-i18n-ph="placeholderSuffix">
+                            </div>
+                            <div class="input-group">
+                                <label for="endNum" data-i18n="endNumLabel">Número Final:</label>
+                                <input type="number" id="endNum" placeholder="Ex: 0500" data-i18n-ph="placeholderEnd">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="tab-text">
+                        <div class="input-grid single-col">
+                            <div class="input-group">
+                                <label for="textSup"><span data-i18n="textSupLabel">Texto Superior:</span> <span class="char-count" id="countSup">0/15</span></label>
+                                <input type="text" id="textSup" placeholder="Texto no lugar do Código (máx 15 carac.)" maxlength="15" data-i18n-ph="placeholderSup">
+                            </div>
+                            <div class="input-group">
+                                <label for="textInf"><span data-i18n="textInfLabel">Texto Inferior:</span> <span class="char-count" id="countInf">0/15</span></label>
+                                <input type="text" id="textInf" placeholder="Texto no lugar do Número (máx 15 carac.)" maxlength="15" data-i18n-ph="placeholderInf">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title" data-i18n="sec4Title">4. Modo de Impressão:</div>
+                <div class="radio-group">
+                    <label class="radio-card">
+                        <input type="radio" name="printMode" value="seq" checked>
+                        <div class="card-content">
+                            <span class="card-title" data-i18n="printSeqTitle">Sequência Contínua</span>
+                            <span class="card-desc" data-i18n="printSeqDesc">Números diferentes na mesma folha</span>
+                        </div>
+                    </label>
+                    <label class="radio-card">
+                        <input type="radio" name="printMode" value="same">
+                        <div class="card-content">
+                            <span class="card-title" data-i18n="printSameTitle">Folhas Completas</span>
+                            <span class="card-desc" data-i18n="printSameDesc">1 folha inteira para cada número</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel actions-panel">
+                <div class="status-container" id="statusBox">
+                    <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+                    <div class="status-content-wrapper">
+                        <span class="status-message" id="statusMessage" data-i18n="statusReady">Pronto para gerar. Preencha os dados e clique no botão abaixo.</span>
+                        <span class="timer-badge" id="timerBadge" style="display: none;">⏱️ 0.0s</span>
+                    </div>
+                </div>
+                
+                <!-- Canvas invisível para JsBarcode -->
+                <canvas id="barcodeCanvas" style="display:none;"></canvas>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="btnGenerate">
+                        <span class="btn-icon">📄</span> <span data-i18n="btnGenerateText">Gerar e Abrir PDF</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="admin_supabase/telemetry_client.js"></script>
+    <script src="templates.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
