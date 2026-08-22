@@ -316,18 +316,6 @@ async function handleGenerate() {
                 return;
             }
 
-            // Regra: Desconsiderar QUALQUER zero à esquerda antes de uma numeração
-            const cleanLeadingZeroes = (str) => {
-                if (!str) return str;
-                const cleaned = str.trim().replace(/^0+/, '');
-                return cleaned !== '' ? cleaned : '0';
-            };
-
-            startStr = cleanLeadingZeroes(startStr);
-            if (endStr) {
-                endStr = cleanLeadingZeroes(endStr);
-            }
-
             // Validação de Caracteres Apenas Numéricos
             if (!/^\d+$/.test(startStr)) {
                 cancelAndError('Erro: O campo número inicial deve conter apenas algarismos numéricos (0-9).');
@@ -483,7 +471,8 @@ async function handleGenerate() {
                     if (printMode === 'seq' && c_num > endNum) return c_num;
                     
                     const targetNum = printMode === 'seq' ? c_num : currentNum;
-                    const baseStr = targetNum.toString(); // Sem forçar zeros à esquerda
+                    const padLen = Math.max(4, startStr.length, (endStr ? endStr.length : 0));
+                    const baseStr = targetNum.toString().padStart(padLen, '0');
                     const fullBcStr = `${prefix}${baseStr}${suffix}`;
                     
                     let displayText = fullBcStr;
